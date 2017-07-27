@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsycServer
 {
@@ -38,6 +35,7 @@ namespace AsycServer
         {
             cursor += n;
         }
+
         public void Reset()
         {
             cursor = 0;
@@ -88,20 +86,32 @@ namespace AsycServer
             int len = ReadInt();
 
             string s = "";
-            for (int i = 0; i < len; i++)
+            for (int i = 0; i < len; i++) {
                 s += (char)ReadByte();
-
+            }
             return s;
         }
 
-        public void WriteByte(short b) { WriteByte((byte)b); }
-        public void WriteByte(int b) { WriteByte((byte)b); }
+        public void WriteByte(short b)
+        {
+            WriteByte((byte)b);
+        }
+
+        public void WriteByte(int b)
+        {
+            WriteByte((byte)b);
+        }
+
         public void WriteByte(byte b)
         {
             byteList.Add(b);
         }
 
-        public void WriteShort(int s) { WriteShort((short)s); }
+        public void WriteShort(int s)
+        {
+            WriteShort((short)s);
+        }
+
         public void WriteShort(short s)
         {
             byteList.AddRange(BitConverter.GetBytes(s));
@@ -125,8 +135,9 @@ namespace AsycServer
         public void WriteString(string s)
         {
             WriteInt(s.Length);
-            for (int i = 0; i < s.Length; i++)
+            for (int i = 0; i < s.Length; i++) {
                 WriteByte((byte)s[i]);
+            }
         }
     }
 }

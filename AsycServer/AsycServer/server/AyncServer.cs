@@ -142,15 +142,20 @@ namespace AsycServer
             debugMessageList.Add(s);
         }
 
-        private List<MessageInfo> inMessages = new List<MessageInfo>(), 
-            outMessages = new List<MessageInfo>(),
-            inMessagesExternal = new List<MessageInfo>();
+        private List<MessageInfo> inMessages = new List<MessageInfo>();
+        private List<MessageInfo> outMessages = new List<MessageInfo>();
+
+        private List<MessageInfo> inMessagesExternal = new List<MessageInfo>();
 
         private UdpClient udpSocket;
         private TcpListener tcpSocket;
-        private int tcpPort, udpPort;
 
-        private Thread acceptThread, receiveThread, sendThread;
+        private int tcpPort;
+        private int udpPort;
+
+        private Thread acceptThread;
+        private Thread receiveThread;
+        private Thread sendThread;
 
         public bool Active
         {
@@ -207,7 +212,6 @@ namespace AsycServer
             }
         }
 
-
         public void Update()
         {
             while (inMessages.Count > 0) {
@@ -236,7 +240,7 @@ namespace AsycServer
             }
         }
 
-        void AcceptThread()
+        private void AcceptThread()
         {
             tcpSocket.Start();
 
@@ -251,7 +255,7 @@ namespace AsycServer
             }
         }
 
-        void ReceiveThread()
+        private void ReceiveThread()
         {
             while (Active) {
                 try {
