@@ -302,7 +302,9 @@ namespace AsycServer
                 c = GetClient(id);
 
                 if (c != null) {
-                    if (DebugInfo.acceptData) Debug("Received udp ip for ID " + id);
+                    if (DebugInfo.acceptData) {
+                        Debug("Received udp ip for ID " + id);
+                    }
 
                     c.udpAdress = ip;
                     connectedList.Add(c);
