@@ -16,11 +16,15 @@ namespace AsycServer
         }
 
         private AyncServer server;
+
         private List<Client> clientList = new List<Client>();
         private Dictionary<Client, int> userList = new Dictionary<Client, int>();
-        private Dictionary<int, Dictionary<int, List<string>>> keyDic = new Dictionary<int, Dictionary<int, List<string>>>();//关键帧
-        private int roleId = 100000; //客户端的人物id
-        private int frameCount = 1; //当前帧数
+        // 关键帧
+        private Dictionary<int, Dictionary<int, List<string>>> keyDic = new Dictionary<int, Dictionary<int, List<string>>>();
+        // 客户端的人物id
+        private int roleId = 100000;
+        // 当前帧数
+        private int frameCount = 1;
 
         public Program()
         {
@@ -48,28 +52,28 @@ namespace AsycServer
             Console.WriteLine("Server started!");
         }
 
-        public void OnConnect(Client c)
+        public void OnConnect(Client client)
         {
-            Console.WriteLine("{0}[{1}, {2}] connected!", c.ID, c.tcpAdress, c.udpAdress);
-            clientList.Add(c);
+            Console.WriteLine("{0}[{1}, {2}] connected!", client.ID, client.tcpAdress, client.udpAdress);
+            clientList.Add(client);
 
             MessageBuffer msg = new MessageBuffer();
             msg.WriteInt(cProto.CONNECT);
             msg.WriteInt(roleId);
-            c.Send(msg);
+            client.Send(msg);
             roleId++;
         }
 
-        public void OnMessage(Client c, MessageBuffer msg)
+        public void OnMessage(Client client, MessageBuffer message)
         {
-            int cproto = msg.ReadInt();
+            int cproto = message.ReadInt();
             switch (cproto) {
                 case cProto.CONNECT:
                     break;
                 case cProto.READY:
-                    if (!userList.ContainsKey(c)) {
-                        int id = msg.ReadInt();
-                        userList.Add(c, id);
+                    if (!userList.ContainsKey(client)) {
+                        int id = message.ReadInt();
+                        userList.Add(client, id);
                     }
                     //所有的玩家都准备好了，可以开始同步
                     if (userList.Count >= clientList.Count) {
@@ -93,26 +97,26 @@ namespace AsycServer
                     break;
                 case cProto.SYNC_POS:
                     for (int i = 0; i < clientList.Count; ++i) {
-                        if (c == clientList[i]) {
+                        if (client == clientList[i]) {
                             continue;
                         }
-                        clientList[i].Send(msg);
+                        clientList[i].Send(message);
                     }
                     break;
                 case cProto.SYNC_KEY:
-                    int clientCurFrameCount = msg.ReadInt();
-                    string keyStr = msg.ReadString();
+                    int clientCurFrameCount = message.ReadInt();
+                    string keyStr = message.ReadString();
                     if (keyDic.ContainsKey(clientCurFrameCount)) {
-                        if (keyDic[clientCurFrameCount].ContainsKey(userList[c])) {
-                            keyDic[clientCurFrameCount][userList[c]].Add(keyStr);
+                        if (keyDic[clientCurFrameCount].ContainsKey(userList[client])) {
+                            keyDic[clientCurFrameCount][userList[client]].Add(keyStr);
                         } else {
-                            keyDic[clientCurFrameCount][userList[c]] = new List<string>();
-                            keyDic[clientCurFrameCount][userList[c]].Add(keyStr);
+                            keyDic[clientCurFrameCount][userList[client]] = new List<string>();
+                            keyDic[clientCurFrameCount][userList[client]].Add(keyStr);
                         }
                     } else {
                         keyDic[clientCurFrameCount] = new Dictionary<int, List<string>>();
-                        keyDic[clientCurFrameCount][userList[c]] = new List<string>();
-                        keyDic[clientCurFrameCount][userList[c]].Add(keyStr);
+                        keyDic[clientCurFrameCount][userList[client]] = new List<string>();
+                        keyDic[clientCurFrameCount][userList[client]].Add(keyStr);
                     }
                     if (clientCurFrameCount == frameCount) {
                         if (keyDic[clientCurFrameCount].Count == clientList.Count) {
@@ -161,10 +165,16 @@ namespace AsycServer
 
                 if (server.Active) {
                     string[] inputArgs = input.Split(' ');
-                    if (inputArgs[0] == "quit") server.Close();
-                    if (inputArgs[0] == "kick") server.GetClient(int.Parse(inputArgs[1])).Disconnect();
+                    if (inputArgs[0] == "quit") {
+                        server.Close();
+                    }
+                    if (inputArgs[0] == "kick") {
+                        server.GetClient(int.Parse(inputArgs[1])).Disconnect();
+                    }
                 } else {
-                    if (input == "start") server.StartUp("127.0.0.1");
+                    if (input == "start") {
+                        server.StartUp("127.0.0.1");
+                    }
                 }
             }
         }

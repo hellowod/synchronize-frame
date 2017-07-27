@@ -135,7 +135,8 @@ namespace AsycServer
         public event PingHandle OnPing;
         public event DebugHandle OnDebug;
 
-        List<string> debugMessageList = new List<string>();
+        private List<string> debugMessageList = new List<string>();
+
         public void Debug(string s)
         {
             debugMessageList.Add(s);
@@ -269,11 +270,13 @@ namespace AsycServer
             }
         }
 
-        void ReceiveData(byte[] data, IPEndPoint ip)
+        private void ReceiveData(byte[] data, IPEndPoint ip)
         {
             if (DebugInfo.downData && data.Length > 1) {
                 string dataString = "";
-                foreach (byte b in data) dataString += b + " ";
+                foreach (byte b in data) {
+                    dataString += b + " ";
+                }
                 Debug("Received " + data.Length + "[" + dataString + "]");
             }
 
@@ -308,7 +311,7 @@ namespace AsycServer
             downByteTotal += data.Length;
         }
 
-        void SendThread()
+        private void SendThread()
         {
             while (Active) {
                 while (outMessages.Count > 0) {
@@ -333,7 +336,7 @@ namespace AsycServer
             }
         }
 
-        void ClientConnected(Socket s)
+        private void ClientConnected(Socket s)
         {
             Client c = new Client(nmbrOfClients, s, this);
             clientList.Add(c);
@@ -386,17 +389,23 @@ namespace AsycServer
             List<Client> list = new List<Client>();
             list.AddRange(clientList);
 
-            foreach (Client c in list) c.Disconnect();
+            foreach (Client c in list) {
+                c.Disconnect();
+            }
         }
 
         public void CatchException(Exception e)
         {
-            if (OnException != null) OnException(e);
+            if (OnException != null) {
+                OnException(e);
+            }
         }
 
         public void PingResult(Client c, int millis)
         {
-            if (OnPing != null) OnPing(c, millis);
+            if (OnPing != null) {
+                OnPing(c, millis);
+            }
         }
     }
 }
