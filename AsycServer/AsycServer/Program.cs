@@ -58,7 +58,7 @@ namespace AsycServer
             clientList.Add(client);
 
             MessageBuffer msg = new MessageBuffer();
-            msg.WriteInt(cProto.CONNECT);
+            msg.WriteInt(CProto.CONNECT);
             msg.WriteInt(roleId);
             client.Send(msg);
             roleId++;
@@ -68,9 +68,9 @@ namespace AsycServer
         {
             int cproto = message.ReadInt();
             switch (cproto) {
-                case cProto.CONNECT:
+                case CProto.CONNECT:
                     break;
-                case cProto.READY:
+                case CProto.READY:
                     if (!userList.ContainsKey(client)) {
                         int id = message.ReadInt();
                         userList.Add(client, id);
@@ -87,7 +87,7 @@ namespace AsycServer
                         }
                         playStr = string.Join(";", playList.ToArray());
                         MessageBuffer buff = new MessageBuffer();
-                        buff.WriteInt(cProto.START);
+                        buff.WriteInt(CProto.START);
                         buff.WriteString(playStr);
 
                         for (int i = 0; i < clientList.Count; ++i) {
@@ -95,7 +95,7 @@ namespace AsycServer
                         }
                     }
                     break;
-                case cProto.SYNC_POS:
+                case CProto.SYNC_POS:
                     for (int i = 0; i < clientList.Count; ++i) {
                         if (client == clientList[i]) {
                             continue;
@@ -103,7 +103,7 @@ namespace AsycServer
                         clientList[i].Send(message);
                     }
                     break;
-                case cProto.SYNC_KEY:
+                case CProto.SYNC_KEY:
                     int clientCurFrameCount = message.ReadInt();
                     string keyStr = message.ReadString();
                     if (keyDic.ContainsKey(clientCurFrameCount)) {
@@ -127,7 +127,7 @@ namespace AsycServer
 
                             string keyData = string.Join(";", keyDataList.ToArray());
                             MessageBuffer buff = new MessageBuffer();
-                            buff.WriteInt(cProto.SYNC_KEY);
+                            buff.WriteInt(CProto.SYNC_KEY);
                             buff.WriteInt(frameCount);
                             buff.WriteString(keyData);
                             for (int i = 0; i < clientList.Count; ++i) {
@@ -137,7 +137,7 @@ namespace AsycServer
                         }
                     }
                     break;
-                case cProto.START:
+                case CProto.START:
                     break;
             }
         }

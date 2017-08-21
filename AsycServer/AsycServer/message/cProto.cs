@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AsycServer
 {
-    public class cProto
+    public class CProto
     {
         public const int CONNECT = 100;
         public const int READY = 101;
